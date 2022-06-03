@@ -25,6 +25,7 @@ class LoadingState extends MusicBeatState
 	
 	var logo:FlxSprite;
 	var gfDance:FlxSprite;
+	var funkay:FlxSprite;
 	var danceLeft = false;
 	
 	function new(target:FlxState, stopMusic:Bool)
@@ -52,7 +53,12 @@ class LoadingState extends MusicBeatState
 		gfDance.antialiasing = true;
 		add(gfDance);
 		add(logo);
-		
+		// if (FlxG.save.data.preloadscreen)
+		funkay = new FlxSprite().loadGraphic('assets/images/funkay.png');
+		funkay.scrollFactor.set();
+		funkay.setGraphicSize(FlxG.width);
+		funkay.screenCenter();
+		add(funkay);
 		initSongsManifest().onComplete
 		(
 			function (lib)
@@ -62,12 +68,7 @@ class LoadingState extends MusicBeatState
 				checkLoadSong(getSongPath());
 				if (PlayState.SONG.needsVoices)
 					checkLoadSong(getVocalPath());
-				checkLibrary("shared");
-				if (PlayState.storyWeek > 0)
-					checkLibrary("week" + PlayState.storyWeek);
-				else
-					checkLibrary("tutorial");
-				
+	
 				var fadeTime = 0.5;
 				FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
 				new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
@@ -152,21 +153,18 @@ class LoadingState extends MusicBeatState
 	static function getNextState(target:FlxState, stopMusic = false):FlxState
 	{
 		Paths.setCurrentLevel("week" + PlayState.storyWeek);
-		#if NO_PRELOAD_ALL
 		var loaded = isSoundLoaded(getSongPath())
 			&& (!PlayState.SONG.needsVoices || isSoundLoaded(getVocalPath()))
 			&& isLibraryLoaded("shared");
 		
 		if (!loaded)
 			return new LoadingState(target, stopMusic);
-		#end
 		if (stopMusic && FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 		
 		return target;
 	}
 	
-	#if NO_PRELOAD_ALL
 	static function isSoundLoaded(path:String):Bool
 	{
 		return Assets.cache.hasSound(path);
@@ -176,7 +174,6 @@ class LoadingState extends MusicBeatState
 	{
 		return Assets.getLibrary(library) != null;
 	}
-	#end
 	
 	override function destroy()
 	{

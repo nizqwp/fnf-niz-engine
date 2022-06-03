@@ -1,0 +1,61 @@
+{
+  "dialogues": [
+    {
+      "content": "HEY!",
+      "leftChar": {
+        "visible": true,
+        "animation": "idle",
+        "name": "dad"
+      },
+      "rightChar": {
+        "visible": false,
+        "animation": "idle",
+        "name": "bf"
+      },
+      "payAttentionTo": "dad"
+    },
+    {
+      "content": "You think you can just sing with my daughter like that?",
+      "leftChar": {
+        "visible": true,
+        "animation": "idle",
+        "name": "dad"
+      },
+      "rightChar": {
+        "visible": false,
+        "animation": "idle",
+        "name": "bf"
+      },
+      "payAttentionTo": "dad"
+    },
+    {
+      "content": "If you want to date her...",
+      "leftChar": {
+        "visible": true,
+        "animation": "idle",
+        "name": "dad"
+      },
+      "rightChar": {
+        "visible": false,
+        "animation": "idle",
+        "name": "bf"
+      },
+      "payAttentionTo": "dad"
+    },
+    {
+      "content": "You're going to have to go \nthrough ME first!",
+      "leftChar": {
+        "visible": true,
+        "animation": "idle",
+        "name": "dad"
+      },
+      "rightChar": {
+        "visible": false,
+        "animation": "idle",
+        "name": "bf"
+      },
+      "payAttentionTo": "dad"
+    }
+  ],
+  "speechBubble":"default"
+}

@@ -17,11 +17,12 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song','options', 'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
 
+	var jojo:Bool = true;
 	public function new(x:Float, y:Float)
 	{
 		super();
@@ -103,20 +104,52 @@ class PauseSubState extends MusicBeatSubstate
 
 			switch (daSelected)
 			{
+				case 'back':
+					menuItems = ['Resume', 'Restart Song', 'options', 'Exit to menu'];
+					pene();
+				case 'options':
+					menuItems = ['botplay','practice mode','back'];
+					pene();
+				case 'middlescroll':
+					FlxG.save.data.mid = !FlxG.save.data.mid;
+					
+					PlayState.move = true;
+					close();
+				case "botplay":
+					FlxG.save.data.botPlay = !FlxG.save.data.botPlay;
+					FlxG.save.data.practice = false;
+				case 'practice mode':
+					FlxG.save.data.practice = !FlxG.save.data.practice;
+					FlxG.save.data.botPlay = false;
 				case "Resume":
 					close();
 				case "Restart Song":
 					FlxG.resetState();
 				case "Exit to menu":
+					FlxG.autoPause = false;
 					FlxG.switchState(new MainMenuState());
+				
 			}
 		}
 
 		if (FlxG.keys.justPressed.J)
 		{
 			// for reference later!
-			// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxKey.J, null);
+			PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxKey.J, null);
 		}
+	}
+	function pene() {
+		curSelected = 0;
+		for (i in 0...grpMenuShit.length){
+			grpMenuShit.remove(grpMenuShit.members[0],true);
+		}
+		for (i in 0...menuItems.length)
+			{
+				var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
+				songText.isMenuItem = true;
+				songText.targetY = i;
+				grpMenuShit.add(songText);
+			}
 	}
 
 	override function destroy()

@@ -1,5 +1,7 @@
 package;
 
+import flixel.FlxSubState;
+import sys.FileSystem;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -19,7 +21,6 @@ class FreeplayState extends MusicBeatState
 {
 	var songs:Array<SongMetadata> = [];
 
-	var selector:FlxText;
 	var curSelected:Int = 0;
 	var curDifficulty:Int = 1;
 
@@ -30,7 +31,7 @@ class FreeplayState extends MusicBeatState
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
-
+	private var posibleDif:Array<String> = [];
 	private var iconArray:Array<HealthIcon> = [];
 
 	override function create()
@@ -60,24 +61,20 @@ class FreeplayState extends MusicBeatState
 		#if debug
 		isDebug = true;
 		#end
+		// addSong('tutorial',0,'gf');
+		for (i in 0...StoryMenuState.weekData.length){
+			var daWeek = StoryMenuState.weekData[i];
+			var daChars = StoryMenuState.weekCharacters[i][0];
+			addWeek(daWeek,i,[daChars]);
+		}
+		// addNewSong("tutorial");
 
-		if (StoryMenuState.weekUnlocked[2] || isDebug)
-			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
 
-		if (StoryMenuState.weekUnlocked[2] || isDebug)
-			addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky']);
+		// if (mapa.get('el pepe')) // cambia esto por tu canción
+		// 	addSong('el pepe',0,'bf');
 
-		if (StoryMenuState.weekUnlocked[3] || isDebug)
-			addWeek(['Pico', 'Philly', 'Blammed'], 3, ['pico']);
 
-		if (StoryMenuState.weekUnlocked[4] || isDebug)
-			addWeek(['Satin-Panties', 'High', 'Milf'], 4, ['mom']);
 
-		if (StoryMenuState.weekUnlocked[5] || isDebug)
-			addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 5, ['parents-christmas', 'parents-christmas', 'monster-christmas']);
-
-		if (StoryMenuState.weekUnlocked[6] || isDebug)
-			addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
 
 		// LOAD MUSIC
 
@@ -126,36 +123,23 @@ class FreeplayState extends MusicBeatState
 		changeSelection();
 		changeDiff();
 
-		// FlxG.sound.playMusic(Paths.music('title'), 0);
-		// FlxG.sound.music.fadeIn(2, 0, 0.8);
-		selector = new FlxText();
-
-		selector.size = 40;
-		selector.text = ">";
-		// add(selector);
-
-		var swag:Alphabet = new Alphabet(1, 0, "swag");
-
-		// JUST DOIN THIS SHIT FOR TESTING!!!
-		/* 
-			var md:String = Markdown.markdownToHtml(Assets.getText('CHANGELOG.md'));
-
-			var texFel:TextField = new TextField();
-			texFel.width = FlxG.width;
-			texFel.height = FlxG.height;
-			// texFel.
-			texFel.htmlText = md;
-
-			FlxG.stage.addChild(texFel);
-
-			// scoreText.textField.htmlText = md;
-
-			trace(md);
-		 */
-
 		super.create();
 	}
+// public function addNewSong(song:String){
+// 	addSong(song, 0, checkIcon(song));
+// }
+// public function checkIcon(s:String):String {
+// 	var icon:String = 'bf';
+// 	switch (s.toLowerCase()){
+// 		case 'tutorial': icon = 'gf';
+// 		case 'boopebo','fresh','dadbattle':icon = "dad";
+// 		case 'spookeez','south': icon = 'spooky';
+// 		case 'pico','philly','blammed': icon = 'pico';
 
+
+// 	}
+// 	return icon;
+// }
 	public function addSong(songName:String, weekNum:Int, songCharacter:String)
 	{
 		songs.push(new SongMetadata(songName, weekNum, songCharacter));
@@ -175,90 +159,207 @@ class FreeplayState extends MusicBeatState
 				num++;
 		}
 	}
-
+	// var canMove = true;
+	override function openSubState(s:FlxSubState){
+		super.openSubState(s);
+	}
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
+		// if (FlxG.keys.justPressed.O){
+		// 	FlxG.save.data.songs_.clear();
+		// }
+		if (FlxG.keys.justPressed.CONTROL){
+			openSubState(new Modif());
+		}
 		if (FlxG.sound.music.volume < 0.7)
 		{
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+			FlxG.sound.music.volume += 0.1 * FlxG.elapsed;
 		}
 
-		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
+		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5));
 
 		if (Math.abs(lerpScore - intendedScore) <= 10)
 			lerpScore = intendedScore;
 
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
 
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var accepted = controls.ACCEPT;
 
-		if (upP)
+		if (FlxG.keys.justPressed.UP)
 		{
 			changeSelection(-1);
 		}
-		if (downP)
+		if (FlxG.keys.justPressed.DOWN)
 		{
 			changeSelection(1);
 		}
 
-		if (controls.LEFT_P)
+		if (FlxG.keys.justPressed.LEFT)
 			changeDiff(-1);
-		if (controls.RIGHT_P)
+		if (FlxG.keys.justPressed.RIGHT)
 			changeDiff(1);
 
-		if (controls.BACK)
+		if (FlxG.keys.justPressed.BACKSPACE)
 		{
 			FlxG.switchState(new MainMenuState());
 		}
+		if (FlxG.keys.justPressed.L) {
+		var 	poop = 'freedom dive';
+		if (FileSystem.exists('assets/data/$poop/$poop.json'))
+			PlayState.SONG = Song.loadFromJson(poop, poop.toLowerCase());
+		else
+			PlayState.SONG =  {
+				song: songs[curSelected].songName.toLowerCase(),
+				notes: [],
+				bpm: 150,
+				needsVoices: true,
+				player1: 'bf',
+				player2: 'dad',
+				speed: 1,
+				validScore: false
+			};
 
-		if (accepted)
+		PlayState.isStoryMode = false;
+		PlayState.storyDifficulty = curDifficulty;
+
+		PlayState.storyWeek = songs[curSelected].week;
+		trace('CUR WEEK' + PlayState.storyWeek);
+		niz_tools.LoadState.load(new PlayState());
+		}
+
+		if (FlxG.keys.justPressed.ENTER)
 		{
-			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+			var poop:String = songs[curSelected].songName.toLowerCase();
+			if (posibleDif.length > 1){
+			switch(posibleDif[curDifficulty].toLowerCase()){
+				case 'hard':
+					poop = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), 2);
+				case 'easy':
+					poop = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), 0);
+				case 'normal':
+					poop = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), 1);
+				default:
+					poop = '${songs[curSelected].songName.toLowerCase()}-${posibleDif[curDifficulty].toLowerCase()}';
+			}
+		} else {
+			if (posibleDif[curDifficulty].toLowerCase().startsWith('hard')){
+				poop = '${songs[curSelected].songName.toLowerCase()}-hard';
+			} else if (posibleDif[curDifficulty].toLowerCase().startsWith('easy')){
+				poop = '${songs[curSelected].songName.toLowerCase()}-easy';
+			} else if (posibleDif[curDifficulty].toLowerCase().startsWith('normal')){
+				poop = '${songs[curSelected].songName.toLowerCase()}';
+			} else {
+				poop = '${songs[curSelected].songName.toLowerCase()}-${posibleDif[curDifficulty].toLowerCase()}';
+
+			}
+			
+		}
 
 			trace(poop);
+			if (FileSystem.exists('assets/data/${songs[curSelected].songName.toLowerCase()}/$poop.json'))
+				PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+			else
+				PlayState.SONG =  {
+					song: songs[curSelected].songName.toLowerCase(),
+					notes: [],
+					bpm: 150,
+					needsVoices: true,
+					player1: 'bf',
+					player2: 'dad',
+					speed: 1,
+					validScore: false
+				};
+				PlayState.songID = curSelected;
 
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 
 			PlayState.storyWeek = songs[curSelected].week;
 			trace('CUR WEEK' + PlayState.storyWeek);
-			LoadingState.loadAndSwitchState(new PlayState());
+			niz_tools.LoadState.load(new PlayState());
 		}
+	
 	}
 
 	function changeDiff(change:Int = 0)
 	{
+		var song = songs[curSelected].songName.toLowerCase();
+
+		if (FileSystem.exists('assets/data/$song')){
+		posibleDif = [];
+		var s = FileSystem.readDirectory('assets/data/${songs[curSelected].songName.toLowerCase()}');
+		var itsJustOne = false;
+		var song = songs[curSelected].songName.toLowerCase();
+		if (FileSystem.exists('assets/data/$song/$song-easy.json')){
+			if (s.length > 1)
+				posibleDif.push('EASY');
+			else
+				posibleDif.push('EASY - but null cuz its a only diff');
+		} 
+		if (FileSystem.exists('assets/data/$song/$song.json')) {
+			if (s.length > 1)
+				posibleDif.push('NORMAL');
+			else
+				posibleDif.push('NORMAL - but null cuz its a only diff');
+
+		}
+		if (FileSystem.exists('assets/data/$song/$song-hard.json')) {
+			if (s.length > 1)
+				posibleDif.push('HARD');
+			else
+				posibleDif.push('HARD - but null cuz its a only diff');
+		}
+		if (s.length > 1){
+
+			for (i in 0...s.length){
+				s[i] = s[i].replace('.json','');
+				
+				var si = (s[i].split('${songs[curSelected].songName.toLowerCase()}-')[1]);
+				if (si!= 'hard' && s[i] != '$song' && si != 'easy'){
+					posibleDif.push(si);
+				}
+			}
+		} else {
+			s[0] = s[0].replace('.json','');
+				
+			var si = (s[0].split('${songs[curSelected].songName.toLowerCase()}-')[1]);
+			if (si!= 'hard' && s[0] != '$song' && si != 'easy'){
+				posibleDif.push(si);
+				itsJustOne = true;
+				
+			}
+		} 
 		curDifficulty += change;
 
 		if (curDifficulty < 0)
-			curDifficulty = 2;
-		if (curDifficulty > 2)
+			curDifficulty = posibleDif.length - 1;
+		if (curDifficulty >= posibleDif.length)
 			curDifficulty = 0;
 
+		FlxG.watch.addQuick('si', curDifficulty);
+		FlxG.watch.addQuick('sint', change);
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		#end
+		if (posibleDif[curDifficulty].endsWith('- but null cuz its a only diff') || itsJustOne){
+			diffText.text = '';
+			scoreText.y = 25;
+	} else {
+		diffText.text = posibleDif[curDifficulty].toUpperCase() #if debug +  ' - debug' #end;
+		scoreText.y = 5;
 
-		switch (curDifficulty)
-		{
-			case 0:
-				diffText.text = "EASY";
-			case 1:
-				diffText.text = 'NORMAL';
-			case 2:
-				diffText.text = "HARD";
-		}
+	}
+	} else {
+		diffText.text = 'épico la song es null';
+		scoreText.y = 5;
+
+	}
+
 	}
 
 	function changeSelection(change:Int = 0)
 	{
 		#if !switch
-		NGio.logEvent('Fresh');
 		#end
 
 		// NGio.logEvent('Fresh');
@@ -281,7 +382,7 @@ class FreeplayState extends MusicBeatState
 		#if PRELOAD_ALL
 		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
 		#end
-
+		changeDiff(0);
 		var bullShit:Int = 0;
 
 		for (i in 0...iconArray.length)

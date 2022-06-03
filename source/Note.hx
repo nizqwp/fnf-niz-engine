@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
@@ -20,6 +21,8 @@ class Note extends FlxSprite
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
+
+	public var notePara:String;
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
@@ -48,13 +51,14 @@ class Note extends FlxSprite
 		this.strumTime = strumTime;
 
 		this.noteData = noteData;
+		this.ID = noteData;
 
 		var daStage:String = PlayState.curStage;
 
 		switch (daStage)
 		{
 			case 'school' | 'schoolEvil':
-				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
+				loadGraphic(Paths.image('UI/pixelUI/arrows-pixels'), true, 17, 17);
 
 				animation.add('greenScroll', [6]);
 				animation.add('redScroll', [7]);
@@ -63,7 +67,7 @@ class Note extends FlxSprite
 
 				if (isSustainNote)
 				{
-					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
+					loadGraphic(Paths.image('UI/pixelUI/arrowEnds'), true, 7, 6);
 
 					animation.add('purpleholdend', [4]);
 					animation.add('greenholdend', [6]);
@@ -80,7 +84,7 @@ class Note extends FlxSprite
 				updateHitbox();
 
 			default:
-				frames = Paths.getSparrowAtlas('NOTE_assets');
+				frames = Paths.getSparrowAtlas('UI/NOTE_assets');
 
 				animation.addByPrefix('greenScroll', 'green0');
 				animation.addByPrefix('redScroll', 'red0');
@@ -122,6 +126,9 @@ class Note extends FlxSprite
 
 		if (isSustainNote && prevNote != null)
 		{
+		flipX = FlxG.save.data.downScroll;
+		flipY = FlxG.save.data.downScroll;
+
 			noteScore * 0.2;
 			alpha = 0.6;
 
@@ -175,7 +182,7 @@ class Note extends FlxSprite
 		{
 			// The * 0.5 is so that it's easier to hit them too late, instead of too early
 			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.7))
 				canBeHit = true;
 			else
 				canBeHit = false;
@@ -187,8 +194,11 @@ class Note extends FlxSprite
 		{
 			canBeHit = false;
 
-			if (strumTime <= Conductor.songPosition)
-				wasGoodHit = true;
+			if (strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.7))
+				{
+					if((isSustainNote && prevNote.wasGoodHit) || strumTime <= Conductor.songPosition)
+						wasGoodHit = true;
+				}
 		}
 
 		if (tooLate)

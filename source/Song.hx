@@ -7,8 +7,14 @@ import lime.utils.Assets;
 
 using StringTools;
 
+typedef SwagEvent = {
+	var eventName:String;
+	var eventArgs:String;
+} 
 typedef SwagSong =
 {
+	var ?event:Array<SwagEvent>;
+	var ?stage:String;
 	var song:String;
 	var notes:Array<SwagSection>;
 	var bpm:Int;
@@ -71,6 +77,8 @@ class Song
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
+		if (swagShit.stage == null)
+			swagShit.stage = 'stage';
 		return swagShit;
 	}
 }

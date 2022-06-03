@@ -62,8 +62,6 @@ class OptionsSubState extends MusicBeatSubstate
 			switch (textMenuItems[curSelected])
 			{
 				case "Controls":
-					FlxG.state.closeSubState();
-					FlxG.state.openSubState(new ControlsSubState());
 			}
 		}
 	}

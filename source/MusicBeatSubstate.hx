@@ -26,7 +26,8 @@ class MusicBeatSubstate extends FlxSubState
 		//everyStep();
 		var oldStep:Int = curStep;
 
-		updateCurStep();
+	Main.onMainUpdate(elapsed);
+	updateCurStep();
 		curBeat = Math.floor(curStep / 4);
 
 		if (oldStep != curStep && curStep > 0)

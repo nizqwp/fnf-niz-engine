@@ -11,7 +11,7 @@ class DiscordClient
 	{
 		trace("Discord Client starting...");
 		DiscordRpc.start({
-			clientID: "814588678700924999",
+			clientID: "940333032953495572",
 			onReady: onReady,
 			onError: onError,
 			onDisconnected: onDisconnected
@@ -39,18 +39,18 @@ class DiscordClient
 			details: "In the Menus",
 			state: null,
 			largeImageKey: 'icon',
-			largeImageText: "Friday Night Funkin'"
+			largeImageText: "ñ."
 		});
 	}
 
 	static function onError(_code:Int, _message:String)
 	{
-		trace('Error! $_code : $_message');
+		// trace('Error! $_code : $_message');
 	}
 
 	static function onDisconnected(_code:Int, _message:String)
 	{
-		trace('Disconnected! $_code : $_message');
+		// trace('Disconnected! $_code : $_message');
 	}
 
 	public static function initialize()
@@ -75,7 +75,7 @@ class DiscordClient
 			details: details,
 			state: state,
 			largeImageKey: 'icon',
-			largeImageText: "Friday Night Funkin'",
+			largeImageText: "Friday Night Funkin' Niz engine",
 			smallImageKey : smallImageKey,
 			// Obtained times are in milliseconds so they are divided so Discord can use it
 			startTimestamp : Std.int(startTimestamp / 1000),

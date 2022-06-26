@@ -40,8 +40,9 @@
 
 	<classpath name="source" />
 
-	<assets path="assets" rename="assets" exclude="*.ogg" if="web"/>
-	<assets path="art/bad-momo.png" rename="niz.png"/>
+	<assets path="assets" rename="assets" embed= "false" exclude="*.ogg" if="web"/>
+	<assets path="idiomShit" rename="id" embed= "true" exclude="*.ogg"/>
+	<assets path="art/bad-momo.png" rename="niz.png" embed= "false"/>
 	<assets path="assets" rename="assets" exclude="*.mp3" unless="web"/>
 	
 	<!-- <define name="PRELOAD_ALL" /> -->
@@ -59,7 +60,7 @@
 		<library name="shared"   preload="false" />
 	</section>
 	<assets path="sys/"             rename=''               if="windows" />
-	<assets path="assets/videos"        library="videos"        if="windows"/>
+<assets path="assets/videos"        library="videos" preload="true" embed="false"/>
 	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
 	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/>
 	

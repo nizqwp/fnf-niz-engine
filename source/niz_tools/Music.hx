@@ -85,7 +85,7 @@ class Music {
     music.play();
     }
   }
-  public function update(f:Float){
+  public function  update(f:Float){
     if (music != null){
     music.onComplete = onComplete;
     if (music.time < time)

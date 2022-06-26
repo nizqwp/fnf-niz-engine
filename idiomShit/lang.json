@@ -1,0 +1,46 @@
+{
+    "spMX": {
+        "name": "Español",
+        "end_file": "-es",
+        "trans": [
+            "Si usted habla otro idioma, presiona #BIND:SPACE para cambiarlo.",
+            "Idioma",
+            "Presentan",
+            "Basado en este",
+            "Juego",
+            "¡Hola!, tu engine está desactualizado, por favor presiona F3 para actualizar.",
+            "Nueva versión, $out.newerver, a continuación los cambios:$out.newchanges"
+        ]
+    },
+    "enEN": {
+        "name": "English",
+        "end_file": "",
+
+        "trans": [
+            "If you speak another language, press #BIND:SPACE to change it.",
+            "Idiom",
+            "Present",
+            "Based on this",
+            "game",
+            "Hello, your engine is out of date, please press F3 to update.",
+            "Nueva versión, $out.newerver, a continuación los cambios:$out.newchanges"
+
+
+        ]
+    },
+    "ptBR": {
+        "name": "Português",
+        "end_file": "-pt",
+        "trans": [
+            "Se você fala outro idioma, pressione #BIND:SPACE para alterá-lo.",
+            "Idioma",
+            "Presente",
+            "Com base nisso",
+            "Jogo",
+            "Olá! Seu motor está desatualizado, por favor, pressione F3 para atualizar.",
+            "Nova versão, $out.newerver, alterações abaixo:$out.newchanges"
+
+        ]
+    }
+    
+}

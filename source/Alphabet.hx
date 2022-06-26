@@ -113,6 +113,23 @@ class Alphabet extends FlxSpriteGroup
 	function doSplitWords():Void
 	{
 		splitWords = _finalText.split("");
+		for ( i in 0...splitWords.length){
+		var isUpper = splitWords[i] == splitWords[i].toUpperCase();
+
+			switch(splitWords[i].toLowerCase()){
+				case 'á','â','ã','à': splitWords[i] = 'a';
+				case 'é','ê','è': splitWords[i] = 'e';
+				case 'í','ì':  splitWords[i] = 'i';
+				case 'ó','ô','õ','ò': splitWords[i] = 'o';
+				case 'ú','ù':splitWords[i] = 'u';
+				case 'ñ': splitWords[i] = 'ñ'; 
+				case 'ç': splitWords[i] = 'c'; 
+				default: 
+			}
+			if (isUpper){
+				splitWords[i] = splitWords[i].toUpperCase();
+			}
+		}
 	}
 
 	public var personTalking:String = 'gf';
@@ -235,6 +252,7 @@ class Alphabet extends FlxSpriteGroup
 class AlphaCharacter extends FlxSprite
 {
 	public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
+	public static var acentos:String = "áéíóúñâêôãõàèìòù";
 
 	public static var numbers:String = "1234567890";
 

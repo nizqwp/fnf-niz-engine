@@ -1,11 +1,13 @@
 package;
 
+import niz_tools.Lang;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
+import niz_tools.Music;
 
 class MusicBeatState extends FlxUIState
 {
@@ -16,11 +18,13 @@ class MusicBeatState extends FlxUIState
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
 
+	var lang:Lang;
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
 	override function create()
 	{
+		PlayerSettings.player1.controls.setKeyboardScheme(Duo(true));
 
 		super.create();
 	}
@@ -30,7 +34,7 @@ class MusicBeatState extends FlxUIState
 		//everyStep();
 		var oldStep:Int = curStep;
 		Main.onMainUpdate(elapsed);
-
+		Lang.update(elapsed);
 		updateCurStep();
 		updateBeat();
 

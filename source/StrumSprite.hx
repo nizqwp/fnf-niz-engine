@@ -11,20 +11,35 @@ import flixel.group.FlxSpriteGroup;
 using StringTools;
 
 class StrumSprite extends FlxSpriteGroup {
-  var midSuma:Float = 280;
-  public function new(lineY:Float,?player:Int){
+  var lineY:Float = 0;
+  var player:Int = 0;
+  public var added:Bool = false;
+  public var addedSpr:Bool = true;
+  public function new(?player:Int){
     super();
+    this.player = player;
+    added = true;
+  }
 
-    midSuma =  player == 1 ? 280 : 360;
+  public function resetStrums(?asGf:Bool = false,?newTexture:Bool = false,?texture:String = 'default'){
+    this.lineY = FlxG.save.data.downScroll ? FlxG.height - 150 : 55;
+    addedSpr = false;
+
+    while (this.members.length > 1){
+      this.members[0].kill();
+      remove(this.members[0],true);
+      this.members[0].destroy();
+    }
+    
     for (i in 0...4)
       {
-        // FlxG.log.add(i);
         var babyArrow:FlxSprite = new FlxSprite(0, lineY);
     
-        switch (PlayState.curStage)
+        switch (texture)
         {
           case 'school' | 'schoolEvil':
-            babyArrow.loadGraphic(Paths.image('UI/pixelUI/arrows-pixels'), true, 17, 17);
+              babyArrow.loadGraphic(Paths.image('UI/pixelUI/arrows-pixels'), true, 17, 17);
+          
             babyArrow.animation.add('green', [6]);
             babyArrow.animation.add('red', [7]);
             babyArrow.animation.add('blue', [5]);
@@ -59,7 +74,10 @@ class StrumSprite extends FlxSpriteGroup {
             }
   
           default:
-            babyArrow.frames = Paths.getSparrowAtlas('UI/NOTE_assets');
+            if (texture == 'default')
+              babyArrow.frames = Paths.getSparrowAtlas('UI/NOTE_assets');
+            else
+              babyArrow.frames = Paths.getSparrowAtlas('UI/$texture');
             babyArrow.animation.addByPrefix('green', 'arrowUP');
             babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
             babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
@@ -95,37 +113,33 @@ class StrumSprite extends FlxSpriteGroup {
   
         babyArrow.updateHitbox();
         babyArrow.scrollFactor.set();
+
         babyArrow.x += 50;
         babyArrow.x += ((FlxG.width / 2) * player);
+  
+        babyArrow.ID = i;
 
-        babyArrow.x += (FlxG.save.data.mid ? midSuma: 0);
 
-        if (!PlayState.isStoryMode)
+        if (newTexture)
         {
           babyArrow.y -= 30;
           babyArrow.alpha = 0;
           babyArrow.x -= 30;
+          // move(true,{x: babyArrow.x + 30,y: babyArrow.y + 30, alpha: (player != 1) ? (FlxG.save.data.mid ? 0.5 : 1) : 1,vel: 1} ,'ALL',{ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
           FlxTween.tween(babyArrow, {x: babyArrow.x + 30,y: babyArrow.y + 30, alpha: (player != 1) ? (FlxG.save.data.mid ? 0.5 : 1) : 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
         }
-  
-        babyArrow.ID = i;
-  
   
   
         babyArrow.animation.play('static');
   
-  
         add(babyArrow);
       }
   }
-  public function playAnim(){
-
-  }
-  public function move(asTween:Bool,data:Dynamic,ID:Dynamic){
+  public function move(asTween:Bool,data:Dynamic,ID:Dynamic, ?tweenOp:Null<TweenOptions>){
     if (ID is Int){
     var spr = this.members[ID];
     if (asTween){
-      FlxTween.tween(spr,{x:spr.x + data.x,y: spr.y + data.y},data.vel);
+      FlxTween.tween(spr,{x:spr.x + data.x,y: spr.y + data.y, alpha: data.alpha},data.vel,tweenOp);
     } else {
       spr.x = data.x;
       spr.y = data.y;
@@ -133,7 +147,7 @@ class StrumSprite extends FlxSpriteGroup {
   } else {
     this.forEach(function (spr:FlxSprite){
       if (asTween){
-        FlxTween.tween(spr,{x:spr.x + data.x,y: spr.y + data.y},data.vel);
+        FlxTween.tween(spr,{x:spr.x + data.x,y: spr.y + data.y},data.vel,tweenOp);
       } else {
         spr.x = data.x;
         spr.y = data.y;
@@ -146,9 +160,12 @@ class StrumSprite extends FlxSpriteGroup {
       var spr = this.members[note];
       return {x:spr.x,y:spr.y,ID:spr.ID};
     } else {
-      var spr = this.members[note.ID];
-      return {x:spr.x,y:spr.y,ID:spr.ID};
+      var spr = this.members[note.noteData];
+      if (spr != null)
+      return {x:spr.x +  (note.isSustainNote ?  25 : 0),y:spr.y,ID:spr.ID};
+
     }
+      return {x:50 +  (note.isSustainNote ?  25 : 0),y:0,ID:0};
   
   }
   var isBot = false;
@@ -172,6 +189,9 @@ class StrumSprite extends FlxSpriteGroup {
               spr.centerOffsets();
         } else {
       spr.animation.play('confirm');
+
+        }
+      }
       if (spr.animation.curAnim.name == 'confirm' && !PlayState.curStage.startsWith('school'))
         {
           spr.centerOffsets();
@@ -180,8 +200,6 @@ class StrumSprite extends FlxSpriteGroup {
         }
         else
           spr.centerOffsets();
-        }
-      }
     });
    
   }
@@ -234,7 +252,18 @@ class StrumSprite extends FlxSpriteGroup {
       });
     }
 
+  } else {	
+    if (spr.animation != null){
+  if (spr.animation.curAnim.name == 'confirm' && !PlayState.curStage.startsWith('school'))
+  {
+    spr.centerOffsets();
+    spr.offset.x -= 13;
+    spr.offset.y -= 13;
   }
+  else
+    spr.centerOffsets();
+  }
+}
 });
 
   }

@@ -3,9 +3,12 @@ package niz_tools;
 import flixel.FlxG;
 
 class Trace {
-  var message:Dynamic;
+  static var message:Dynamic;
   public function new(message:Dynamic,?type:String = 'normal', ?jose:Bool = true){
-    this.message = message;
+    rel(message,type,jose);
+  }
+  public static function rel(memsgssage:Dynamic,?type:String = 'normal', ?jose:Bool = true){
+    message = memsgssage;
     switch(type){
       case 'warn': log_warn();
       case 'notice': log_notice();
@@ -14,25 +17,26 @@ class Trace {
       default:
         log_add();
     }
+
   }
-  function log_add(){
+  static function log_add(){
     FlxG.log.add(message);
     trace(message);
 
   }
-  function log_error() {
+  static function log_error() {
     FlxG.log.error(message);
     trace('[ERROR]: $message');
   }
-  function log_warn(){
+  static function log_warn(){
     FlxG.log.warn(message);
     trace('[WARNING]: $message');
   }
-  function log_notice(){
+  static function log_notice(){
     FlxG.log.notice(message);
     trace('[NOTICE]: $message');
   }
-  function clearLogs() {
+  static function clearLogs() {
     FlxG.log.clear();
     trace('cleaning...');
     trace('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n');

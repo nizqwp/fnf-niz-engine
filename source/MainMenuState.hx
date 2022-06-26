@@ -1,5 +1,7 @@
 package;
 
+import niz_tools.Lang;
+import flixel.addons.display.FlxBackdrop;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -33,9 +35,15 @@ class MainMenuState extends MusicBeatState
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+	var versionShit:FlxText;
+	var front:FlxSprite;
+	var group:FlxTypedGroup<FlxText> = new FlxTypedGroup<FlxText>();
 
 	override function create()
 	{
+		if (OutDatedData.isOldVer){
+			trace('outdated');
+		}
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
@@ -95,12 +103,27 @@ class MainMenuState extends MusicBeatState
 		}
 
 		FlxG.camera.follow(camFollow, null, 0.06);
+		var hola = new FlxSprite(0, FlxG.height - 18).makeGraphic(3000,20,FlxColor.BLACK);
+		hola.scrollFactor.set();
+		add(hola);
+		hola.alpha = 0;
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
+
+		versionShit = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
+		if (OutDatedData.isOldVer){
 
+			versionShit.velocity.set(10,0);
+			versionShit.text = OutDatedData.desc;
+			hola.alpha = 0.5;
+			front = new FlxSprite().makeGraphic(FlxG.width,FlxG.height,FlxColor.BLACK);
+			front.scrollFactor.set();
+			front.alpha = 0;
+			add(front);
+		}
+		add(group);
 		// NG.core.calls.event.logEvent('swag').send();
 
 		changeItem();
@@ -116,9 +139,24 @@ class MainMenuState extends MusicBeatState
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
-
+		if (OutDatedData.isOldVer){
+			if (versionShit.x >= FlxG.width * 1.1)
+				versionShit.x -= FlxG.width * 1.7;
+		}
 		if (!selectedSomethin)
 		{
+
+			if (FlxG.keys.justPressed.F3 && OutDatedData.isOldVer){
+				selectedSomethin = true;
+				front.alpha = 0.6;
+				var text = new FlxText(0,30,0, Lang.getTr(6).replace("$out.newerver",OutDatedData.getTitle()).replace("$out.newchanges", ' \n' +OutDatedData.getChanges()) + '\n') ;
+				text.text += '\n';
+				trace(text.text);
+				text.size = 15;
+				text.screenCenter(X);
+				group.add(text);
+
+			}
 			if (controls.UP_P)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -182,14 +220,25 @@ class MainMenuState extends MusicBeatState
 										trace("Freeplay Menu Selected");
 
 									case 'options':
-										FlxTransitionableState.skipNextTransIn = true;
-										FlxTransitionableState.skipNextTransOut = true;
-										FlxG.switchState(new OptionsMenu());
+										FlxG.switchState(new KeyBind.Menu());
 								}
 							});
 						}
 					});
 				}
+			}
+		} else {
+			if (controls.ACCEPT && OutDatedData.isOldVer){
+				while (group.members.length > 1)	{
+					group.remove(group.members[0],true);
+				}
+				front.alpha = 0;
+				selectedSomethin= false;
+				#if linux
+				Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+				#else
+				FlxG.openURL('');
+				#end
 			}
 		}
 

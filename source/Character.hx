@@ -30,6 +30,83 @@ class Character extends FlxSprite
 
 		switch (curCharacter)
 		{
+			case 'knuckles':
+				tex = Paths.getSparrowAtlas('characters/cuchillos.docx');
+				frames = tex;
+				animation.addByPrefix('idle', 'idle', 24, false);
+				animation.addByPrefix('singUP', 'up', 24, false);
+				animation.addByPrefix('singDOWN', 'down', 24, false);
+				if (isPlayer){
+					animation.addByPrefix('singLEFT', 'right', 24, false);
+					animation.addByPrefix('singRIGHT', 'left', 24, false);
+				} else {
+					animation.addByPrefix('singLEFT', 'left', 24, false);
+					animation.addByPrefix('singRIGHT', 'right', 24, false);
+				}
+				
+				addOffset('idle');
+				addOffset('singUP',20,90);
+				addOffset('singDOWN',20,-150);
+				if (isPlayer){
+				addOffset('singLEFT',80,-70);
+				addOffset('singRIGHT',100,-80);
+				} else {
+				addOffset('singLEFT',100,-80);
+				addOffset('singRIGHT',80,-70);
+				}
+			case 'tails':
+				tex = Paths.getSparrowAtlas('characters/personas.hx');
+				frames = tex;
+				animation.addByPrefix('idle', 'idle', 24, false);
+				animation.addByPrefix('singUP', 'up', 24, false);
+				animation.addByPrefix('singDOWN', 'down', 24, false);
+				if (isPlayer){
+					animation.addByPrefix('singLEFT', 'right', 24, false);
+					animation.addByPrefix('singRIGHT', 'left', 24, false);
+				} else {
+					animation.addByPrefix('singLEFT', 'left', 24, false);
+					animation.addByPrefix('singRIGHT', 'right', 24, false);
+				}
+				
+				addOffset('idle');
+				addOffset('singUP',90,140);
+				addOffset('singDOWN');
+				if (isPlayer){
+				addOffset('singLEFT',30,20);
+				addOffset('singRIGHT',10,-21);
+				} else {
+				addOffset('singLEFT',10,-21);
+				addOffset('singRIGHT',30,20);
+				}
+			case 'sonic':
+				tex = Paths.getSparrowAtlas('characters/sonic-jpg-edition');
+				frames = tex;
+				animation.addByPrefix('idle', 'idle', 24, false);
+				animation.addByPrefix('singUP', 'up', 24, false);
+				animation.addByPrefix('singDOWN', 'down', 24, false);
+				if (isPlayer){
+					animation.addByPrefix('singLEFT', 'right', 24, false);
+					animation.addByPrefix('singRIGHT', 'left', 24, false);
+				} else {
+					animation.addByPrefix('singLEFT', 'left', 24, false);
+					animation.addByPrefix('singRIGHT', 'right', 24, false);
+				}
+				animation.addByPrefix('breath', 'breath', 24, false);
+				animation.addByPrefix('hey', 'breath', 24, false);
+				
+				addOffset('idle');
+				addOffset('singUP',0,40);
+				addOffset('singDOWN',0,-10);
+				if (isPlayer){
+				addOffset('singLEFT');
+				addOffset('singRIGHT');
+				} else {
+				addOffset('singLEFT',40);
+				addOffset('singRIGHT',110,20);
+				}
+				addOffset('breath',50,90);
+				addOffset('hey',50,90);
+
 			case 'gf':
 				// GIRLFRIEND CODE
 				tex = Paths.getSparrowAtlas('characters/GF_assets');

@@ -36,7 +36,10 @@ class AnimationEditor extends MusicBeatState
 	{
 		// FlxG.sound.music.stop();
 		// FlxG.sound.music.time = 0;
-		FlxG.sound.playMusic('assets/songs/boopebo/Inst.ogg');
+		var song:String = 'triple-trouble';
+		if (PlayState.SONG != null)
+			song = PlayState.SONG.song.toLowerCase();
+		FlxG.sound.playMusic('songs:assets/songs/$song/Inst.ogg');
 		// FlxG.sound.music.looped = true;
 		var gridBG:FlxSprite = FlxGridOverlay.create(10, 10);
 		gridBG.scrollFactor.set(0.5, 0.5);

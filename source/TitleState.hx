@@ -1,5 +1,8 @@
+
 package;
 
+import haxe.Json;
+import niz_tools.Lang;
 #if desktop
 import Discord.DiscordClient;
 import sys.thread.Thread;
@@ -47,7 +50,6 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 
-		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
@@ -55,10 +57,6 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-
-		FlxG.save.bind('funkin', 'niz');
-
-		Highscore.load();
 		FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
 		FlxG.sound.music.pause();
 
@@ -67,7 +65,6 @@ class TitleState extends MusicBeatState
 		// bg.setGraphicSize(Std.int(bg.width * 0.6));
 		// bg.updateHitbox();
 		add(bg);
-       FlxG.autoPause = false;
 
 		logoBl = new FlxSprite(-150, -100);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
@@ -146,7 +143,7 @@ class TitleState extends MusicBeatState
 
 			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
 				new FlxRect(-200, -200, FlxG.width * 2, FlxG.height * 2));
-			FlxTransitionableState.defaultTransOut = new TransitionData(TILES, FlxColor.BLACK, 1, new FlxPoint(0, 1),
+			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, 1),
 				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 2, FlxG.height * 2));
 
 			transIn = FlxTransitionableState.defaultTransIn;
@@ -160,12 +157,12 @@ class TitleState extends MusicBeatState
 			// music.loadStream(Paths.music('freakyMenu'));
 			// FlxG.sound.list.add(music);
 			// music.play();
-			FlxG.sound.music.resume();
-			FlxG.sound.music.time = 0;
 
-			FlxG.sound.music.fadeIn(2, 0, 0.8);
 		}
+		FlxG.sound.music.resume();
+		FlxG.sound.music.time = 0;
 
+		FlxG.sound.music.fadeIn(2, 0, 0.8);
 		Conductor.changeBPM(102);
 		persistentUpdate = true;
 
@@ -179,7 +176,7 @@ class TitleState extends MusicBeatState
 		credGroup.add(blackScreen);
 
 
-		ngSpr = new FlxSprite(0, FlxG.height * 0.52);
+		ngSpr = new FlxSprite(0, FlxG.height * 0.52 -100);
 		ngSpr.frames = logoBl.frames;
 		add(ngSpr);
 		ngSpr.visible = false;
@@ -200,7 +197,11 @@ class TitleState extends MusicBeatState
 
 	function getIntroTextShit():Array<Array<String>>
 	{
-		var fullText:String = Assets.getText(Paths.txt('introText'));
+		
+		var fullText:String = 'missingno--yeathisisnull';
+		if (Assets.exists(Paths.txt('introText' + Lang.getEnd()))){
+			fullText = Assets.getText(Paths.txt('introText' + Lang.getEnd()));
+		} 
 
 		var firstArray:Array<String> = fullText.split('\n');
 		var swagGoodArray:Array<Array<String>> = [];
@@ -267,23 +268,9 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.music.stop();
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
-			{
-				// Check if version is outdated
-
-				var version:String = "v" + Application.current.meta.get('version');
-
-				if (version.trim() != "0" && !OutdatedSubState.leftState)
-				{
-					FlxG.switchState(new OutdatedSubState());
-					trace('OLD VERSION!');
-					trace('old ver');
-					trace(version.trim());
-					trace('cur ver');
-				}
-				else
-				{
-					FlxG.switchState(new MainMenuState());
-				}
+			{				
+				OutDatedData.check();
+				FlxG.switchState(new MainMenuState()); // fail but we go anyway
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
@@ -326,6 +313,7 @@ class TitleState extends MusicBeatState
 		}
 	}
 
+	var gameNames:Array<String> = ['Omongus', 'Pou story mode','FNF', 'NFN','Helaos' ,'Este texto no aparece!'];
 	override function beatHit()
 	{
 		super.beatHit();
@@ -338,20 +326,22 @@ class TitleState extends MusicBeatState
 		else
 			gfDance.animation.play('danceLeft');
 
-		FlxG.log.add(curBeat);
-
 		switch (curBeat)
 		{
+			case 0:
+				createCoolText(['Loading', 'please wait', 'im so dumb for this']);
+
 			case 1:
+				deleteCoolText();
 				createCoolText(['niz']);
 			case 3:
-				addMoreText('present');
+				addMoreText(niz_tools.Lang.getTr(2));
 			case 4:
 				deleteCoolText();
 			case 5:
-				createCoolText(['Based on this', 'game']);
+				createCoolText([niz_tools.Lang.getTr(3), niz_tools.Lang.getTr(4)]);
 			case 7:
-				addMoreText('omongus');
+				addMoreText(gameNames[FlxG.random.int(0,gameNames.length - 2)]);
 				ngSpr.visible = true;
 			case 8:
 				deleteCoolText();
@@ -363,16 +353,15 @@ class TitleState extends MusicBeatState
 			case 12:
 				deleteCoolText();
 			case 13:
-				addMoreText('FNF');
+				addMoreText(FlxG.random.bool(0.50) ? 'FNF' : 'OMGONGUS');
 			case 14:
-				addMoreText('Niz');
+				addMoreText(FlxG.random.bool(0.50) ? 'Niz' : 'Nizi');
 			case 15:
-				addMoreText('Engine'); 
+				addMoreText(FlxG.random.bool(0.1)  ? 'SHIT' : 'Engine'); 
 			case 16:
-				addMoreText('BETA'); 
-
-			case 17:
 				skipIntro();
+
+		
 		}
 	}
 

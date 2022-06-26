@@ -1,3 +1,4 @@
+import lime.utils.Assets;
 #if web
 import openfl.net.NetConnection;
 import openfl.net.NetStream;
@@ -76,8 +77,9 @@ class FlxVideo extends FlxBasic {
 			pDir = appDir;
 		else if (fileName.indexOf("file://") == -1 || fileName.indexOf("http") == -1) // C:, D: etc? ..missing "file:///" ?
 			pDir = "file:///";
-		// "\\";
-		return fileName;
+		trace(Assets.exists(pDir + fileName));
+
+		return  pDir + fileName;
 	}
 	
 	public static function onFocus() {

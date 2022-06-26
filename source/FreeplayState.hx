@@ -68,7 +68,7 @@ class FreeplayState extends MusicBeatState
 			addWeek(daWeek,i,[daChars]);
 		}
 		// addNewSong("tutorial");
-
+		addSong('triple-trouble',0,'dad');
 
 		// if (mapa.get('el pepe')) // cambia esto por tu canción
 		// 	addSong('el pepe',0,'bf');
@@ -209,6 +209,7 @@ class FreeplayState extends MusicBeatState
 			PlayState.SONG = Song.loadFromJson(poop, poop.toLowerCase());
 		else
 			PlayState.SONG =  {
+				threePlayers: true,
 				song: songs[curSelected].songName.toLowerCase(),
 				notes: [],
 				bpm: 150,
@@ -263,7 +264,8 @@ class FreeplayState extends MusicBeatState
 					song: songs[curSelected].songName.toLowerCase(),
 					notes: [],
 					bpm: 150,
-					needsVoices: true,
+				threePlayers: true,
+				needsVoices: true,
 					player1: 'bf',
 					player2: 'dad',
 					speed: 1,

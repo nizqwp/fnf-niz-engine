@@ -11,8 +11,10 @@ typedef SwagEvent = {
 	var eventName:String;
 	var eventArgs:String;
 } 
+
 typedef SwagSong =
 {
+	var threePlayers:Bool;
 	var ?event:Array<SwagEvent>;
 	var ?stage:String;
 	var song:String;

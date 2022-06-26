@@ -4,10 +4,9 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
+import flixel.math.FlxRect;
+
 import flixel.util.FlxColor;
-#if polymod
-import polymod.format.ParseRules.TargetSignatureElement;
-#end
 
 using StringTools;
 
@@ -22,28 +21,34 @@ class Note extends FlxSprite
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
 
-	public var notePara:String;
-
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
 	public var noteScore:Float = 1;
+
+	public var dropType:Bool = true;
 
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
 	public static var GREEN_NOTE:Int = 2;
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
+	public var noteType:Int = 0;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
+	public var isTilin:Bool = false;
+
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, nt:Int = 0)
 	{
 		super();
+		this.noteType = nt;
 
 		if (prevNote == null)
 			prevNote = this;
 
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
+
+		isTilin = (noteType == 5); // nose eso me imagino que es una bool
 
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
@@ -84,6 +89,8 @@ class Note extends FlxSprite
 				updateHitbox();
 
 			default:
+				switch(noteType){
+				default:
 				frames = Paths.getSparrowAtlas('UI/NOTE_assets');
 
 				animation.addByPrefix('greenScroll', 'green0');
@@ -104,6 +111,7 @@ class Note extends FlxSprite
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
 				antialiasing = true;
+			}
 		}
 
 		switch (noteData)
@@ -173,10 +181,37 @@ class Note extends FlxSprite
 			}
 		}
 	}
-
+	public var noteFrom:String = '?';
+	public var strumY:Float = 0;
+	public var press:Bool = false;
 	override function update(elapsed:Float)
 	{
+
+
 		super.update(elapsed);
+		dropType = !(this.y <= 350); // this.y <= 350.303123; JAJAJAJ SOY REINTELIGENTE (momazo: invertí esto por que me dio weba ajustarlo)
+		var yes = (!this.mustPress || (this.wasGoodHit || (this.prevNote.wasGoodHit && !this.canBeHit)) ) || FlxG.save.data.botPlay;
+		if (isSustainNote && yes){
+		if (dropType){
+			if (this.y + this.offset.y <= strumY + Note.swagWidth / 2)
+				{
+					var swagRect = new FlxRect(0, strumY + Note.swagWidth / 2 - this.y, this.width * 2, this.height * 2);
+					swagRect.y /= this.scale.y;
+					swagRect.height -= swagRect.y;
+
+					this.clipRect = swagRect;
+				}
+		} else {
+			if (this.y - this.offset.y >= strumY + Note.swagWidth / 2)
+				{
+					var swagRect = new FlxRect(0, strumY - Note.swagWidth / 2 + this.y, this.width * 2, this.height * 2);
+					swagRect.y /= this.scale.y;
+					swagRect.height -= swagRect.y;
+
+					this.clipRect = swagRect;
+				}
+		}
+	}
 
 		if (mustPress)
 		{
@@ -194,17 +229,13 @@ class Note extends FlxSprite
 		{
 			canBeHit = false;
 
-			if (strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.7))
-				{
-					if((isSustainNote && prevNote.wasGoodHit) || strumTime <= Conductor.songPosition)
-						wasGoodHit = true;
-				}
-		}
 
-		if (tooLate)
-		{
-			if (alpha > 0.3)
-				alpha = 0.3;
 		}
+		if (strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.7))
+			{
+				if((isSustainNote && prevNote.press) || strumTime <= Conductor.songPosition)
+					press = true;
+			}
+
 	}
 }
